@@ -51,9 +51,12 @@
 
 -(void)initRegistration;
 {
-    NSString * registrationToken = [[FIRInstanceID instanceID] token];
-
-    if (registrationToken != nil) {
+    [[FIRInstanceID instanceID] instanceIDWithHandler:^(FIRInstanceIDResult * _Nullable result,
+                                                        NSError * _Nullable error) {
+      if (error != nil) {
+        NSLog(@"Error fetching remote instance ID: %@", error);
+      } else {
+        NSString * registrationToken = result.token;
         NSLog(@"FCM Registration Token: %@", registrationToken);
         [self setFcmRegistrationToken: registrationToken];
 
@@ -67,10 +70,8 @@
         }
 
         [self registerWithToken:registrationToken];
-    } else {
-        NSLog(@"FCM token is null");
-    }
-
+      }
+    }];
 }
 
 //  FCM refresh token
@@ -79,7 +80,6 @@
 #if !TARGET_IPHONE_SIMULATOR
     // A rotation of the registration tokens is happening, so the app needs to request a new token.
     NSLog(@"The FCM registration token needs to be changed.");
-    [[FIRInstanceID instanceID] token];
     [self initRegistration];
 #endif
 }
@@ -501,7 +501,7 @@
             [matchingNotificationIdentifiers addObject:notification.request.identifier];
         }
         [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:matchingNotificationIdentifiers];
-        
+
         NSString *message = [NSString stringWithFormat:@"Cleared notification with ID: %@", notId];
         CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:message];
         [self.commandDelegate sendPluginResult:commandResult callbackId:command.callbackId];
