@@ -117,10 +117,11 @@ NSString *const pushPluginApplicationDidBecomeActiveNotification = @"pushPluginA
 
     if (application.applicationState != UIApplicationStateActive) {
         pushHandler.isInline = YES;
+    } else {
+        pushHandler.isInline = NO;
     }
 
     pushHandler.notificationMessage = userInfo;
-    pushHandler.isInline = NO;
     [pushHandler notificationReceived];
 }
 
