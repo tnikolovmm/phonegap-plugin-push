@@ -115,6 +115,10 @@ NSString *const pushPluginApplicationDidBecomeActiveNotification = @"pushPluginA
         [pushHandler.handlerObj setObject:safeHandler forKey:@"handler"];
     }
 
+    if (application.applicationState != UIApplicationStateActive) {
+        pushHandler.isInline = YES;
+    }
+
     pushHandler.notificationMessage = userInfo;
     pushHandler.isInline = NO;
     [pushHandler notificationReceived];
@@ -140,7 +144,7 @@ NSString *const pushPluginApplicationDidBecomeActiveNotification = @"pushPluginA
 - (void)pushPluginOnApplicationDidBecomeActive:(NSNotification *)notification {
 
     NSLog(@"active");
-    
+
     NSString *firstLaunchKey = @"firstLaunchKey";
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"phonegap-plugin-push"];
     if (![defaults boolForKey:firstLaunchKey]) {
